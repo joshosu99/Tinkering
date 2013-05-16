@@ -61,6 +61,7 @@ def separator = "*"*70
  * Check ARGS and get oldVersion and newVersion
  **********************************************************************/
 
+println "Getting version numbers..."
 if(args.size()== 1){
     // use to input to get new branch name
     newBranch = args[0]
@@ -89,12 +90,13 @@ if(args.size()== 1){
  * If git branch doesn't exist make branch and go to it, else fail
  **********************************************************************/
 
+println "Making new branch $newBranch..."
 def getBranches = "git branch -r".execute()
 getBranches.waitFor()
 def branches = getBranches.in.text
 if (branches.contains(newBranch)) {
-    println "[Error]     Branch $newBranch already exists."
-    println "[Error]     Either delete the preexisting branch or change to another version number."
+    println "[Error]     Branch origin/$newBranch already exists."
+    println "[Error]     Either delete the preexisting remote branch or change to another version number."
     return
 } else {
     def makeBranch = "git checkout -b $newBranch".execute()
@@ -184,13 +186,17 @@ launch4jFiles.each{file->
 /**********************************************************************
  * Make a commit
  **********************************************************************/
+
+println "Making commit..."
 def commit = "git commit -a -m \"Version $newVersion\"".execute()
 commit.waitFor()
-println "Commit made"
+println "Commit made."
 
 /**********************************************************************
  * Push new branch to origin
  **********************************************************************/
+
+println "Pushing branch to origin..."
 def push = "git push origin $newBranch".execute()
 push.waitFor()
 print "\n"
