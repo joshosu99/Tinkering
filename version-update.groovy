@@ -184,7 +184,7 @@ launch4jFiles.each{file->
 /**********************************************************************
  * Make a commit
  **********************************************************************/
-def commit = "git commit -a -m Version $newVersion".execute()
+def commit = "git commit -a -m \"Version $newVersion\"".execute()
 commit.waitFor()
 println "Commit made"
 
