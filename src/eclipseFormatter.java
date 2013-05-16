@@ -1,9 +1,9 @@
-public class eclipseFormatter {
+			public class eclipseFormatter {
 	/**
 	 * @param args
 	 */
 
-	public static void main(String[] args) {
+					public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		System.out.println("hello yo");
 		System.out.println("word");
