@@ -15,7 +15,7 @@
  * Setup variables
  **********************************************************************/
 
-println "Incrementing calc version numbers..."
+println "Changing calc version numbers..."
 
 def oldVersion = "."
 def newVersion = "."
@@ -180,8 +180,12 @@ launch4jFiles.each{file->
 /**********************************************************************
  * Run launch4j to make new executables
  **********************************************************************/
-
-
+println "Running launch4j..."
+def calcLaunch4j = new File("calc-launch4j.xml").absolutePath
+// add other xml
+def runCalcLaunch4j = "launch4j.exe $calcLaunch4j".execute()
+runCalcLaunch4j.waitFor()
+println "Launch4j done."
 
 /**********************************************************************
  * Make a commit
