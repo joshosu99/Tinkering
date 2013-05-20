@@ -4,7 +4,7 @@
     <groupId>com.spidasoftware</groupId>
     <artifactId>rendering</artifactId>
     <packaging>jar</packaging>
-    <version>4.3-SNAPSHOT</version>
+    <version>4.3.0</version>
     <name>Trunk-Rendering</name>
     <url>http://maven.apache.org</url>
     <parent>
