@@ -15,7 +15,7 @@
  * Setup variables
  **********************************************************************/
 
-println "Changing calc version numbers..."
+println "Running version-update..."
 
 def oldVersion = "."
 def newVersion = "."
@@ -80,7 +80,7 @@ if(args.size()== 1){
             oldVersion = line.toString().replace("<version>", "").replace("</version>", "").trim()
         }
     }
-    println "Old version $oldVersion will be updated to $newVersion"
+    println "Old version $oldVersion will be changed to version $newVersion."
 }else {
     println "[Error]     No changes made.  Enter 1 parameter - version numbers will be changed to this."
     return
@@ -91,14 +91,23 @@ if(args.size()== 1){
  **********************************************************************/
 
 println "Making new branch $newBranch..."
-def getBranches = "git branch -r".execute()
-getBranches.waitFor()
-def branches = getBranches.in.text
-if (branches.contains(newBranch)) {
-    println "[Error]     Branch origin/$newBranch already exists."
-    println "[Error]     Either delete the preexisting remote branch or change to another version number."
+def getRemoteBranches = "git branch -r".execute()
+getRemoteBranches.waitFor()
+def remoteBranches = getRemoteBranches.in.text
+def getLocalBranches = "git branch".execute()
+getLocalBranches.waitFor()
+def localBranches = getLocalBranches.in.text
+if (remoteBranches.contains(newBranch)) {
+    println "[Error]     Remote branch origin/$newBranch already exists."
+    println "[Error]     Delete preexisting remote branch or change version number."
     return
-} else {
+}
+if (localBranches.contains(newBranch)) {
+    println "[Error]     Local branch $newBranch already exists."
+    println "[Error]     Delete preexisting local branch or change version number."
+    return
+}
+if (!remoteBranches.contains(newBranch) && !localBranches.contains(newBranch)) {
     def makeBranch = "git checkout -b $newBranch".execute()
     makeBranch.waitFor()
     println "New branch $newBranch was made and moved to."
@@ -203,8 +212,11 @@ println "Commit made."
 println "Pushing branch to origin..."
 def push = "git push origin $newBranch".execute()
 push.waitFor()
+println "Branch pushed to origin."
 print "\n"
 println separator
-println "[Success]     Your branch was committed and pushed to the origin."
+println "[Success]     Version numbers changed to $newVersion."
+println "[Success]     $newBranch was created, committed, and pushed to the origin."
 println separator
 print "\n"
+println "Run version-update-test.groovy to test."
