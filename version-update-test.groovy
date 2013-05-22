@@ -24,6 +24,7 @@ def launch4jStatus = true
 def pomStatus = true
 def branchStatus = true
 def commitStatus = true
+def exeStatus = true
 
 def pomFiles = [
         new File("Test/pom.xml"),
@@ -168,10 +169,37 @@ println separator
 print "\n"
 
 /**********************************************************************
+ *  Checking updated .exe applications
+ **********************************************************************/
+
+println "Checking .exe files for changes..."
+def checkExeFiles = "git diff master".execute()
+checkExeFiles.waitFor()
+def exeResults = checkExeFiles.in.text
+
+def calcResult = "[Succeeded]"
+def editorResult = "[Succeeded]"
+if (!exeResults.contains("/calc.exe differ")) {
+    calcResult = "[Error]"
+    exeStatus = false
+}
+if (!exeResults.contains("/editor.exe differ")) {
+    editorResult = "[Error]"
+    exeStatus = false
+}
+
+print "\n"
+println separator
+println "$calcResult  calc.exe"
+println "$editorResult editor.exe"
+println separator
+print "\n"
+
+/**********************************************************************
  * Check created branches (2) and current branch
  **********************************************************************/
 
-println "Checking branches..."
+println "Checking git branches..."
 def checkLocalBranches = "git branch".execute()
 checkLocalBranches.waitFor()
 def localBranches = checkLocalBranches.in.text
@@ -209,12 +237,10 @@ if (remoteBranches.contains("origin/$branchName")) {
 }
 
 /**********************************************************************
- *  Checking updated .exe applications
- **********************************************************************/
-
-/**********************************************************************
  * Check commit
  **********************************************************************/
+
+println "Checking commit..."
 def checkCommit = "git status".execute()
 checkCommit.waitFor()
 def commitResult = checkCommit.in.text
@@ -232,7 +258,7 @@ if (commitResult.contains("nothing to commit")) {
 print "\n"
 println separator
 if (branchStatus && commitStatus) {
-    println "[Succeeded]  Branches created and commits made."
+    println "[Succeeded]  Branches created and commit made."
 } else if (branchStatus) {
     println "[Error]  Commit was not made successfully."
 } else if (commitStatus) {
@@ -249,6 +275,7 @@ println separator
 // getting printable results
 def pomResult2 = "[Succeeded]"
 def launch4jResult2 = "[Succeeded]"
+def exeResult2 = "[Succeeded]"
 def branchResult2 = "[Succeeded]"
 def commitResult2 = "[Succeeded]"
 if (!pomStatus) {
@@ -256,6 +283,9 @@ if (!pomStatus) {
 }
 if (!launch4jStatus) {
     launch4jResult2 = "[Error]"
+}
+if (!exeStatus) {
+    exeResult2 = "[Error]"
 }
 if (!branchStatus) {
     branchResult2 = "[Error]"
@@ -268,6 +298,7 @@ print "\n"
 println separator
 println "$pomResult2  pom file version numbers: $checkVersion"
 println "$launch4jResult2  launch4j file version numbers: $checkVersion"
+println "$exeResult2 calc.exe and editor.exe"
 println "$branchResult2  branches: $branchName and origin/$branchName"
 println "$commitResult2  commit"
 println separator
