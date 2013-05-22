@@ -20,7 +20,6 @@ println "Checking version numbers..."
 
 def checkVersion = "."
 def presentVersion = "."
-def listOptionOn = false
 def launch4jStatus = true
 def pomStatus = true
 
@@ -62,15 +61,11 @@ def separator = "*"*70
 /**********************************************************************
  * Check ARGS
  **********************************************************************/
-if(args.size() == 1 && args[0] != "list"){
+if(args.size() == 1){
     checkVersion = args[0]
-    println "Checking for $checkVersion"
-} else if (args.size() == 2 && args[1] == "list") {
-    checkVersion = args[0]
-    println "Checking for $checkVersion"
-    listOptionOn = true
-} else if (args.size() == 0 || (args.size() == 1 && args[0] == "list")) {
-    println "Checking that all version numbers are the same"
+    println "Checking for $checkVersion..."
+} else if (args.size() == 0) {
+    println "Checking that all version numbers are the same..."
     checkVersion = null
     // Gets checkVersion from builder/pom.xml
     new File("Test/pom.xml").eachLine(){line->
@@ -80,82 +75,75 @@ if(args.size() == 1 && args[0] != "list"){
     }
     if (!checkVersion) {
         println "[Error] Could not find a version number in build/pom.xml"
-        checkVersion = "..........."
-    }
-    if (args.size() == 1 && args[0] == "list") {
-        listOptionOn = true
+        return
     }
 } else {
     println "[Error]  Only input one version number to check."
+    return
 }
 
 /**********************************************************************
  * 1. Checks that all pom.xml files have the correct version number
  **********************************************************************/
-if (checkVersion != "...........") {
-    println "Checking pom.xml files..."
-    def problemPomFiles = [:];
-    pomFiles.each{file->
-        def checkedFirst = false
-        presentVersion = "."
-        def lines = file.readLines()
-        lines.each{line->
-            if(line.contains("<version>") && !checkedFirst){
-                presentVersion = line.toString().replace("<version>", "").replace("</version>", "").trim()
-                checkedFirst = true
-            }
-        }
-        if (presentVersion != checkVersion) {
-            pomStatus = false
-            problemPomFiles.put(file, presentVersion)
-        }
-        if (listOptionOn) {
-            println "     $file"
+
+println "Checking pom.xml files..."
+def problemPomFiles = [:];
+pomFiles.each{file->
+    def checkedFirst = false
+    presentVersion = "."
+    def lines = file.readLines()
+    lines.each{line->
+        if(line.contains("<version>") && !checkedFirst){
+            presentVersion = line.toString().replace("<version>", "").replace("</version>", "").trim()
+            checkedFirst = true
         }
     }
-    if (pomStatus) {
-        println "All pom.xml files have the same version number:  $checkVersion"
-    } else {
-        println "[Error]  All pom.xml files do not have the same version number:  $checkVersion"
-        println "[Error]  Problem files are:"
-        problemPomFiles.any() {file, version ->
-            println "               $file version:  $version"
-        }
+    if (presentVersion != checkVersion) {
+        pomStatus = false
+        problemPomFiles.put(file, presentVersion)
+    }
+    println "     $file"
+}
+if (pomStatus) {
+    println "All pom.xml files have the same version number:  $checkVersion"
+} else {
+    println "[Error]  All pom.xml files do not have the same version number:  $checkVersion"
+    println "[Error]  Problem files are:"
+    problemPomFiles.any() {file, version ->
+        println "[Error]        $file version:  $version"
     }
 }
+
 
 /**********************************************************************
  * 2. Checks that all launch4j.xml files have the correct version number
  **********************************************************************/
-if (checkVersion != "...........") {
-    println "Checking launch4j.xml files..."
-    def problemLaunch4jFiles = [:];
-    launch4jFiles.each{file->
-        def checkedFirst = false
-        presentVersion = "."
-        def lines = file.readLines()
-        lines.each{line->
-            if(line.contains("<jar>") && !checkedFirst){
-                presentVersion = line.toString().replace("<jar>jars/launcher-", "").replace(".jar</jar>", "").trim()
-                checkedFirst = true
-            }
-        }
-        if (presentVersion != checkVersion) {
-            launch4jStatus = false
-            problemLaunch4jFiles.put(file, presentVersion)
-        }
-        if (listOptionOn) {
-            println "     $file"
+
+println "Checking launch4j.xml files..."
+def problemLaunch4jFiles = [:];
+launch4jFiles.each{file->
+    def checkedFirst = false
+    presentVersion = "."
+    def lines = file.readLines()
+    lines.each{line->
+        if(line.contains("<jar>") && !checkedFirst){
+            presentVersion = line.toString().replace("<jar>jars/launcher-", "").replace(".jar</jar>", "").trim()
+            checkedFirst = true
         }
     }
-    if (launch4jStatus) {
-        println "All launch4j.xml files have the same version number:  $checkVersion"
-    } else {
-        println "[Error]  All launch4j.xml files do not have the same version number:  $checkVersion"
-        println "[Error]  Problem files are:"
-        problemLaunch4jFiles.any() {file, version ->
-            println "               $file version:  $version"
-        }
+    if (presentVersion != checkVersion) {
+        launch4jStatus = false
+        problemLaunch4jFiles.put(file, presentVersion)
+    }
+    println "     $file"
+}
+if (launch4jStatus) {
+    println "All launch4j.xml files have the same version number:  $checkVersion"
+} else {
+    println "[Error]  All launch4j.xml files do not have the same version number:  $checkVersion"
+    println "[Error]  Problem files are:"
+    problemLaunch4jFiles.any() {file, version ->
+        println "[Error]        $file version:  $version"
     }
 }
 
@@ -165,11 +153,8 @@ if (checkVersion != "...........") {
 
 print "\n"
 println separator
-println "All appropriate files checked"
-if (checkVersion == "...........") {
-    println "[Error]  Could not find a version number in build/pom.xml"
-} else if (pomStatus && launch4jStatus) {
-    println "[Succeeded]  All version numbers are the same"
+if (pomStatus && launch4jStatus) {
+    println "[Succeeded]  All version numbers are the same: $presentVersion"
 } else if (pomStatus) {
     println "[Error]  All launch4j.xml files do not have the same version number"
 } else if (launch4jStatus) {
