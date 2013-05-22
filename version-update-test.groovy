@@ -110,9 +110,9 @@ if (pomStatus) {
     println "All pom.xml files have the same version number:  $checkVersion"
 } else {
     println "[Error]  All pom.xml files do not have the same version number:  $checkVersion"
-    println "[Error]  Problem files are:"
+    println "[Error]  Problem files:"
     problemPomFiles.any() {file, version ->
-        println "[Error]        $file version:  $version"
+        println "[Error]        $file   version:  $version"
     }
 }
 
@@ -143,9 +143,9 @@ if (launch4jStatus) {
     println "All launch4j.xml files have the same version number:  $checkVersion"
 } else {
     println "[Error]  All launch4j.xml files do not have the same version number:  $checkVersion"
-    println "[Error]  Problem files are:"
+    println "[Error]  Problem files:"
     problemLaunch4jFiles.any() {file, version ->
-        println "[Error]        $file version:  $version"
+        println "[Error]        $file   version:  $version"
     }
 }
 
@@ -165,6 +165,7 @@ if (pomStatus && launch4jStatus) {
     println "[Error]  Neither pom.xml nor launch4j.xml files have the same version numbers"
 }
 println separator
+print "\n"
 
 /**********************************************************************
  * Check created branches (2) and current branch
@@ -201,7 +202,7 @@ def checkRemoteBranches = "git branch -r".execute()
 checkRemoteBranches.waitFor()
 def remoteBranches = checkRemoteBranches.in.text
 if (remoteBranches.contains("origin/$branchName")) {
-    println "Remote branch was appropriately created."
+    println "Remote branch origin/$branchName was created."
 } else {
     branchStatus = false
     println "[Error]  Did not create the appropriate remote branch origin/$branchName."
@@ -237,7 +238,7 @@ if (branchStatus && commitStatus) {
 } else if (commitStatus) {
     println "[Error] Branches were not created correctly."
 } else {
-    println "[Error]  Neither the branches nor the commit was done correctly."
+    println "[Error]  Neither the branches nor the commit are correct."
 }
 println separator
 
