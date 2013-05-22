@@ -199,8 +199,8 @@ if (localBranches.contains("* $branchName")) {
 // check remote branch exists
 def checkRemoteBranches = "git branch -r".execute()
 checkRemoteBranches.waitFor()
-def remoteBranches = checkLocalBranches.in.text
-if (remoteBranches.contains(origin/$branchName)) {
+def remoteBranches = checkRemoteBranches.in.text
+if (remoteBranches.contains("origin/$branchName")) {
     println "Remote branch was appropriately created."
 } else {
     branchStatus = false
@@ -265,8 +265,8 @@ if (!commitStatus) {
 
 print "\n"
 println separator
-println "$pomResult2  pom file version numbers"
-println "$launch4jResult2  launch4j file version numbers"
-println "$branchResult2  branches"
+println "$pomResult2  pom file version numbers: $checkVersion"
+println "$launch4jResult2  launch4j file version numbers: $checkVersion"
+println "$branchResult2  branches: $branchName and origin/$branchName"
 println "$commitResult2  commit"
 println separator
