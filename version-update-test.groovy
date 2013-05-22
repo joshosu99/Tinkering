@@ -187,7 +187,7 @@ if (!exeResults.contains("/editor.exe differ")) {
     editorResult = "[Error]"
     exeStatus = false
 }
-
+println "Check .exe files for changes."
 print "\n"
 println separator
 println "$calcResult  calc.exe"
