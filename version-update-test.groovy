@@ -16,12 +16,14 @@
  * Setup variables
  **********************************************************************/
 
-println "Checking version numbers..."
+println "Running version-update-test..."
 
 def checkVersion = "."
 def presentVersion = "."
 def launch4jStatus = true
 def pomStatus = true
+def branchStatus = true
+def commitStatus = true
 
 def pomFiles = [
         new File("Test/pom.xml"),
@@ -148,7 +150,7 @@ if (launch4jStatus) {
 }
 
 /**********************************************************************
- * Print result
+ * Print version number change results
  **********************************************************************/
 
 print "\n"
@@ -162,4 +164,109 @@ if (pomStatus && launch4jStatus) {
 } else {
     println "[Error]  Neither pom.xml nor launch4j.xml files have the same version numbers"
 }
+println separator
+
+/**********************************************************************
+ * Check created branches (2) and current branch
+ **********************************************************************/
+
+println "Checking branches..."
+def checkLocalBranches = "git branch".execute()
+checkLocalBranches.waitFor()
+def localBranches = checkLocalBranches.in.text
+// get branch name from version number
+def branchName
+if (!checkVersion.contains("SNAPSHOT")) {
+    branchName = checkVersion
+} else {
+    branchName = checkVersion.replace("-SNAPSHOT", ".x")
+}
+// check local branch
+if (localBranches.contains(branchName)){
+    println "Local branch $branchName exists."
+} else {
+    branchStatus = false
+    println "[Error]  Local branch $branchName does not exist."
+}
+// check current branch is correct
+if (localBranches.contains("* $branchName")) {
+    println "Correctly moved to $branchName."
+} else {
+    branchStatus = false
+    println "[Error]  Did not move to correct branch $branchName."
+}
+
+// check remote branch exists
+def checkRemoteBranches = "git branch -r".execute()
+checkRemoteBranches.waitFor()
+def remoteBranches = checkLocalBranches.in.text
+if (remoteBranches.contains(origin/$branchName)) {
+    println "Remote branch was appropriately created."
+} else {
+    branchStatus = false
+    println "[Error]  Did not create the appropriate remote branch origin/$branchName."
+}
+
+/**********************************************************************
+ *  Checking updated .exe applications
+ **********************************************************************/
+
+/**********************************************************************
+ * Check commit
+ **********************************************************************/
+def checkCommit = "git status".execute()
+checkCommit.waitFor()
+def commitResult = checkCommit.in.text
+if (commitResult.contains("nothing to commit")) {
+    println "Commit was made successfully."
+} else {
+    commitStatus = false
+    println "[Error]  Commit was not made successfully."
+}
+
+/**********************************************************************
+ * Print branch and commit results
+ **********************************************************************/
+
+print "\n"
+println separator
+if (branchStatus && commitStatus) {
+    println "[Succeeded]  Branches created and commits made."
+} else if (branchStatus) {
+    println "[Error]  Commit was not made successfully."
+} else if (commitStatus) {
+    println "[Error] Branches were not created correctly."
+} else {
+    println "[Error]  Neither the branches nor the commit was done correctly."
+}
+println separator
+
+/**********************************************************************
+ * Print all results
+ **********************************************************************/
+
+// getting printable results
+def pomResult2 = "[Succeeded]"
+def launch4jResult2 = "[Succeeded]"
+def branchResult2 = "[Succeeded]"
+def commitResult2 = "[Succeeded]"
+if (!pomStatus) {
+    pomResult2 = "[Error]"
+}
+if (!launch4jStatus) {
+    launch4jResult2 = "[Error]"
+}
+if (!branchStatus) {
+    branchResult2 = "[Error]"
+}
+if (!commitStatus) {
+    commitResult2 = "[Error]"
+}
+
+print "\n"
+println separator
+println "$pomResult2  pom file version numbers"
+println "$launch4jResult2  launch4j file version numbers"
+println "$branchResult2  branches"
+println "$commitResult2  commit"
 println separator
