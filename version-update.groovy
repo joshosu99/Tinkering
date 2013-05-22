@@ -1,12 +1,15 @@
 /**********************************************************************
- * Script to increment calc JAR files.
+ * Script to change calc pom and launch4j files, change calc.exe and editor.exe,
+ * make branch, and push branch to origin.
  *
- * Enter original and new to replace all version numbers.
- * Enter nothing to go from SNAPSHOT to number ending .0, or
- * enter nothing to increment final decimal number.
+ * Enter new version number to replace all old version numbers.
  *
- * 1. Change pom.xml file version numbers
- * 2. Change launch4j.xml file version numbers
+ * 1. If git branch doesn't exist make branch and go to it, else fail
+ * 2. Change pom.xml file version numbers
+ * 3. Change launch4j.xml file version numbers
+ * 4. Run launch4j to make new executables
+ * 5. Make a commit
+ * 6. Push new branch to origin
  *
  * Works with Groovy 1.8.4
  **********************************************************************/
@@ -20,7 +23,6 @@ println "Running version-update..."
 def oldVersion = "."
 def newVersion = "."
 def newBranch = "."
-def changeOption = true
 
 def pomFiles = [
         new File("Test/pom.xml"),
@@ -87,7 +89,7 @@ if(args.size()== 1){
 }
 
 /**********************************************************************
- * If git branch doesn't exist make branch and go to it, else fail
+ * 1. If git branch doesn't exist make branch and go to it, else fail
  **********************************************************************/
 
 println "Making new branch $newBranch..."
@@ -114,7 +116,7 @@ if (!remoteBranches.contains(newBranch) && !localBranches.contains(newBranch)) {
 }
 
 /**********************************************************************
- * 1. Change pom.xml file version numbers
+ * 2. Change pom.xml file version numbers
  **********************************************************************/
 
 pomFiles.each{file->
@@ -140,18 +142,8 @@ pomFiles.each{file->
     }
 }
 
-///**********************************************************************
-// * Print pom.xml finish
-// **********************************************************************/
-//
-//print "\n"
-//println separator
-//println "Changed pom.xml project file versions"
-//println separator
-//print "\n"
-
 /**********************************************************************
- * 2. Change launch4j.xml file version numbers
+ * 3. Change launch4j.xml file version numbers
  **********************************************************************/
 
 launch4jFiles.each{file->
@@ -177,17 +169,8 @@ launch4jFiles.each{file->
     }
 }
 
-///**********************************************************************
-// * Print launch4j.xml finish
-// **********************************************************************/
-//
-//print "\n"
-//println separator
-//println "Changed launch4j.xml file versions"
-//println separator
-
 /**********************************************************************
- * Run launch4j to make new executables
+ * 4. Run launch4j to make new executables
  **********************************************************************/
 println "Running launch4j..."
 def calcLaunch4j = new File("calc-launch4j.xml").absolutePath
@@ -197,7 +180,7 @@ runCalcLaunch4j.waitFor()
 println "Launch4j done."
 
 /**********************************************************************
- * Make a commit
+ * 5. Make a commit
  **********************************************************************/
 
 println "Making commit..."
@@ -206,7 +189,7 @@ commit.waitFor()
 println "Commit made."
 
 /**********************************************************************
- * Push new branch to origin
+ * 6. Push new branch to origin
  **********************************************************************/
 
 println "Pushing branch to origin..."

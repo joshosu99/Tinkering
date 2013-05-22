@@ -1,13 +1,13 @@
 /**********************************************************************
- * Script to test that calcIncrementVersion incremented correctly
+ * Script to test that version-update worked correctly
  * Enter nothing to compare all version numbers
  * Enter "version number" to test if all versions match this given number
- * Enter "list" if you want the list of all files that are checked
- * Enter "version number" and "list" if you want to check all of the files
- *      for a given version number and you want the list of all files checked
  *
  * 1. Checks that all pom.xml files have the correct version number
  * 2. Checks that all launch4j.xml files have the correct version number
+ * 3. Checks updated .exe applications
+ * 4. Checks created branches (2) and current branch
+ * 5. Checks commit
  *
  * Works with Groovy 1.8.4
  **********************************************************************/
@@ -169,7 +169,7 @@ println separator
 print "\n"
 
 /**********************************************************************
- *  Checking updated .exe applications
+ *  3. Checking updated .exe applications
  **********************************************************************/
 
 println "Checking .exe files for changes..."
@@ -196,7 +196,7 @@ println separator
 print "\n"
 
 /**********************************************************************
- * Check created branches (2) and current branch
+ * 4. Check created branches (2) and current branch
  **********************************************************************/
 
 println "Checking git branches..."
@@ -237,7 +237,7 @@ if (remoteBranches.contains("origin/$branchName")) {
 }
 
 /**********************************************************************
- * Check commit
+ * 5. Check commit
  **********************************************************************/
 
 println "Checking commit..."
