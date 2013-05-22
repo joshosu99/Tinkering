@@ -216,7 +216,7 @@ println "Branch pushed to origin."
 print "\n"
 println separator
 println "[Success]     Version numbers changed to $newVersion."
-println "[Success]     $newBranch was created, committed, and pushed to the origin."
+println "[Success]     Branch $newBranch was created, committed, and pushed to the origin."
 println separator
 print "\n"
 println "Run version-update-test.groovy to test."
