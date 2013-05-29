@@ -20,7 +20,7 @@
 
 println "Running version-update..."
 
-def oldVersion = "MASTERTEST"
+def oldVersion = "MASTER"
 def newVersion = "."
 def newBranch = "."
 
