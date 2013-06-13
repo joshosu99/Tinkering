@@ -43,7 +43,7 @@ filesMoved.each {file ->
 	file.renameTo(new File (newDir, file.getName()))
 }
 
-def commit = "git commit -am".execute()
+def commit = "git commit -am JavaDoc".execute()
 commit.in.eachLine {line -> println line}
 commit.waitFor()
 
