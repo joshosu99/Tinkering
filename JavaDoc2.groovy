@@ -20,7 +20,7 @@ def filesToMove = [
 
 File dirTemp = new File ("C:/users/jtrick/desktop/name") 
 
-def filesMoved
+def filesMoved = []
 
 filesToMove.each { file ->
 	File newFile = new File (dirTemp, file.getName())
@@ -33,10 +33,11 @@ changeBranch.in.eachLine { line -> println line}
 changeBranch.waitFor()
 
 def deleteDir = "rm my-app".execute()
-deletDir.in.eachLine { line -> println line}
-deletDir.waitFor()
+deleteDir.in.eachLine { line -> println line}
+deleteDir.waitFor()
 
-File newDir = new File("my-app").mkdir()
+File newDir = new File("my-app")
+newDir.mkdir()
 
 filesMoved.each {file ->
 	file.renameTo(new File (newDir, file.getName()))
